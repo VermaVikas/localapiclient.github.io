@@ -37,6 +37,23 @@ transition: 0.2s;
 background: #4f46e5;
 }
 
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo img {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+.logo h1 {
+  font-size: 42px;
+  margin: 0;
+}
+
 .screenshot img {
   width: 90%;
   max-width: 800px;
