@@ -87,4 +87,410 @@
 
         .hero {
             padding: 90px 0 60px;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 4rem;
+            margin-bottom: 18px;
+            background: linear-gradient(90deg, #22d3ee, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            max-width: 760px;
+            margin: auto;
+            color: #b9c0d4;
+            font-size: 1.15rem;
+        }
+
+        .hero-buttons {
+            margin-top: 36px;
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            transition: 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #22d3ee, #a855f7);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(168, 85, 247, 0.45);
+        }
+
+        .btn-secondary {
+            border: 1px solid #2f3a58;
+            color: #d7d7d7;
+        }
+
+        .btn-secondary:hover {
+            border-color: #7dd3fc;
+            color: #7dd3fc;
+        }
+
+        /* Product Cards */
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 36px;
+            text-align: center;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+            margin-bottom: 90px;
+        }
+
+        .product-card {
+            background: linear-gradient(180deg, rgba(17,24,39,0.95), rgba(10,15,30,0.98));
+            border: 1px solid #1d2742;
+            border-radius: 24px;
+            overflow: hidden;
+            transition: 0.35s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            border-color: #364b7a;
+            box-shadow: 0 0 24px rgba(34, 211, 238, 0.08);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: #0b1020;
+        }
+
+        .product-content {
+            padding: 26px;
+        }
+
+        .product-content h3 {
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+        }
+
+        .product-content p {
+            color: #b5bdd0;
+            margin-bottom: 18px;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .tag {
+            background: rgba(34, 211, 238, 0.12);
+            color: #7dd3fc;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+        }
+
+        /* Product Detail */
+
+        .product-section {
+            padding: 90px 0;
+            border-top: 1px solid #172036;
+        }
+
+        .product-layout {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .product-image img {
+            width: 100%;
+            border-radius: 24px;
+            border: 1px solid #1f2b48;
+        }
+
+        .product-info h2 {
+            font-size: 2.6rem;
+            margin-bottom: 16px;
+        }
+
+        .product-info p {
+            color: #bcc5d6;
+            margin-bottom: 20px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .feature-list li {
+            margin-bottom: 12px;
+            color: #dce3f3;
+        }
+
+        .download-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 25px;
+        }
+
+        .download-buttons a {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            background: #111827;
+            border: 1px solid #24314f;
+            color: #f4f4f4;
+            transition: 0.3s ease;
+        }
+
+        .download-buttons a:hover {
+            border-color: #7dd3fc;
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+
+        footer {
+            padding: 60px 0 40px;
+            text-align: center;
+            color: #9aa5be;
+            border-top: 1px solid #172036;
+            margin-top: 80px;
+        }
+
+        .heart {
+            color: #ff4d6d;
+            animation: glow 1.5s infinite ease-in-out;
+        }
+
+        @keyframes glow {
+            0% {
+                text-shadow: 0 0 4px #ff4d6d;
+            }
+            50% {
+                text-shadow: 0 0 16px #ff4d6d;
+            }
+            100% {
+                text-shadow: 0 0 4px #ff4d6d;
+            }
+        }
+
+        /* Responsive */
+
+        @media (max-width: 900px) {
+            .hero h2 {
+                font-size: 2.8rem;
+            }
+
+            .product-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- Navbar -->
+
+        <nav class="navbar">
+            <div class="brand">
+                <img src="assets/icons/DF-icon.png" alt="DevForge Logo">
+                <h1 style="margin-bottom: 0px;">DevForge</h1>
+            </div>
+
+            <div class="nav-links">
+                <a href="#products">Products</a>
+                <a href="#localapiclient">LocalAPIClient</a>
+                <a href="#muledocgenerator">Mule Doc Generator</a>
+            </div>
+        </nav>
+
+        <!-- Hero -->
+
+        <section class="hero">
+            <h2>Privacy-First Developer Tools</h2>
+
+            <p>
+                Modern desktop applications built for developers and enterprises.
+                No cloud sync. No external uploads. Everything runs locally.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#products" class="btn btn-primary">Explore Products</a>
+                <a href="https://github.com/VermaVikas" class="btn btn-secondary">GitHub</a>
+            </div>
+        </section>
+
+        <!-- Product Cards -->
+
+        <section id="products">
+            <h2 class="section-title">Products</h2>
+
+            <div class="product-grid">
+
+                <!-- LocalAPIClient Card -->
+
+                <div class="product-card">
+                    <img src="assets/localapiclient-image.png" alt="LocalAPIClient">
+
+                    <div class="product-content">
+                        <h3>LocalAPIClient</h3>
+
+                        <p>
+                            A fast, privacy-first desktop API testing tool built for local execution.
+                        </p>
+
+                        <div class="tag-list">
+                            <span class="tag">Offline First</span>
+                            <span class="tag">Collections</span>
+                            <span class="tag">Environment Variables</span>
+                            <span class="tag">Electron</span>
+                        </div>
+
+                        <a href="#localapiclient" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+
+                <!-- Mule Documentation Generator -->
+
+                <div class="product-card">
+                    <img src="assets/MuleDocGenerator.png" alt="Mule Documentation Generator">
+
+                    <div class="product-content">
+                        <h3>Mule Documentation Generator</h3>
+
+                        <p>
+                            Automatically generate structured documentation for MuleSoft projects locally.
+                        </p>
+
+                        <div class="tag-list">
+                            <span class="tag">MuleSoft</span>
+                            <span class="tag">Documentation</span>
+                            <span class="tag">Local Processing</span>
+                            <span class="tag">Enterprise Friendly</span>
+                        </div>
+
+                        <a href="#muledocgenerator" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LocalAPIClient -->
+
+        <section id="localapiclient" class="product-section">
+            <div class="product-layout">
+
+                <div class="product-image">
+                    <img src="assets/localapiclient-image.png" alt="LocalAPIClient Screenshot">
+                </div>
+
+                <div class="product-info">
+                    <h2>LocalAPIClient</h2>
+
+                    <p>
+                        A lightweight desktop API client focused on speed, privacy, and local-first development workflows.
+                    </p>
+
+                    <ul class="feature-list">
+                        <li>⚡ Fast and distraction-free desktop experience</li>
+                        <li>🔒 No cloud sync or external API storage</li>
+                        <li>📦 Collections and environment variable support</li>
+                        <li>🖥️ Built with Electron, React, Python, and SQLite</li>
+                    </ul>
+
+                    <div class="download-buttons">
+                        <a href="release/localapiclient/LocalAPIClient_1.0.0_x64-setup.exe">
+                            🪟 Windows Setup
+                        </a>
+
+                        <a href="release/localapiclient/LocalAPIClient_main_x64_portable.zip">
+                            📦 Portable ZIP
+                        </a>
+
+                        <a href="release/localapiclient/LocalAPIClient_1.0.0_universal.dmg">
+                            🍎 macOS DMG
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mule Documentation Generator -->
+
+        <section id="muledocgenerator" class="product-section">
+            <div class="product-layout">
+
+                <div class="product-image">
+                    <img src="assets/MuleDocGenerator.png" alt="Mule Documentation Generator Screenshot">
+                </div>
+
+                <div class="product-info">
+                    <h2>Mule Documentation Generator</h2>
+
+                    <p>
+                        Generate structured and readable MuleSoft documentation automatically while keeping your project completely local.
+                    </p>
+
+                    <ul class="feature-list">
+                        <li>📄 Auto-generate Mule flow documentation</li>
+                        <li>🔒 Enterprise-safe local execution</li>
+                        <li>⚡ Faster onboarding and project understanding</li>
+                        <li>🧠 Built for MuleSoft developers and teams</li>
+                    </ul>
+
+                    <div class="download-buttons">
+                        <a href="release/mule-doc-generator/MuleDocGenerator_1.0.0_x64-setup.exe">
+                            🪟 Windows Setup
+                        </a>
+
+                        <a href="release/mule-doc-generator/MuleDocGenerator_1.0.0_main_x64_portable.zip">
+                            📦 Portable ZIP
+                        </a>
+
+                        <a href="release/mule-doc-generator/MuleDocGenerator_1.0.0_universal.dmg">
+                            🍎 macOS DMG
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+
+        <footer>
+            <p>
+                DevForge | Created with <span class="heart">❤</span> by Vikas Verma
+            </p>
+        </footer>
+
+    </div>
+
+</body>
 </html>
