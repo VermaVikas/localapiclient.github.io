@@ -1,496 +1,1086 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevForge | Privacy-First Developer Tools</title>
+  <link rel="icon" type="image/png" href="assets/icons/DF-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
-    <title>DevForge | Privacy-First Developer Tools</title>
+  <style>
+    :root {
+      --bg: #060a10;
+      --bg-surface: #0c1220;
+      --bg-card: #101828;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.13);
+      --text: #e8edf5;
+      --text-muted: #6b7a96;
+      --text-dim: #3d4a62;
+      --accent: #00d4aa;
+      --accent-dim: rgba(0,212,170,0.12);
+      --accent-glow: rgba(0,212,170,0.25);
+      --mono: 'JetBrains Mono', monospace;
+      --serif: 'Instrument Serif', serif;
+      --sans: 'DM Sans', sans-serif;
+    }
 
-    <link rel="icon" type="image/png" href="assets/icons/DF-icon.png" />
-    <link rel="stylesheet" href="style.css" />
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    html { scroll-behavior: smooth; }
 
-        html {
-            scroll-behavior: smooth;
-        }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
 
-        body {
-            background: #050816;
-            color: #f5f5f5;
-            font-family: Inter, Arial, sans-serif;
-            line-height: 1.6;
-        }
+    a { text-decoration: none; color: inherit; }
 
-        a {
-            text-decoration: none;
-        }
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        .container {
-            width: 92%;
-            max-width: 1300px;
-            margin: auto;
-        }
+    /* Grid lines */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        /* Navbar */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: auto;
+      padding: 0 28px;
+    }
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 0;
-            position: sticky;
-            top: 0;
-            background: rgba(5, 8, 22, 0.92);
-            backdrop-filter: blur(10px);
-            z-index: 100;
-        }
+    /* ─── NAV ─── */
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(6, 10, 16, 0.85);
+      backdrop-filter: blur(18px);
+    }
 
-        .brand img {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-        }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
 
-        .brand h1 {
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .nav-links {
-            display: flex;
-            gap: 26px;
-        }
+    .brand-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -1px;
+    }
 
-        .nav-links a {
-            color: #d7d7d7;
-            transition: 0.3s ease;
-            font-size: 0.95rem;
-        }
+    .brand-name {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
 
-        .nav-links a:hover {
-            color: #7dd3fc;
-        }
+    .nav-links {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
 
-        /* Hero */
+    .nav-links a {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 7px;
+      transition: color 0.2s, background 0.2s;
+    }
 
-        .hero {
-            padding: 90px 0 60px;
-            text-align: center;
-        }
+    .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
 
-        .hero h2 {
-            font-size: 4rem;
-            margin-bottom: 18px;
-            background: linear-gradient(90deg, #22d3ee, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    .nav-gh {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent) !important;
+      border: 1px solid var(--accent-glow);
+      border-radius: 7px;
+      padding: 5px 12px !important;
+    }
 
-        .hero p {
-            max-width: 760px;
-            margin: auto;
-            color: #b9c0d4;
-            font-size: 1.15rem;
-        }
+    .nav-gh:hover {
+      background: var(--accent-dim) !important;
+    }
 
-        .hero-buttons {
-            margin-top: 36px;
-            display: flex;
-            justify-content: center;
-            gap: 18px;
-            flex-wrap: wrap;
-        }
+    /* ─── HERO ─── */
 
-        .btn {
-            padding: 14px 24px;
-            border-radius: 14px;
-            font-weight: 600;
-            transition: 0.3s ease;
-            display: inline-block;
-        }
+    .hero {
+      padding: 110px 0 90px;
+      text-align: center;
+      position: relative;
+    }
 
-        .btn-primary {
-            background: linear-gradient(90deg, #22d3ee, #a855f7);
-            color: white;
-        }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(ellipse at center, rgba(0,212,170,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 18px rgba(168, 85, 247, 0.45);
-        }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
 
-        .btn-secondary {
-            border: 1px solid #2f3a58;
-            color: #d7d7d7;
-        }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
 
-        .btn-secondary:hover {
-            border-color: #7dd3fc;
-            color: #7dd3fc;
-        }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
 
-        /* Product Cards */
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -1px;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
 
-        .section-title {
-            font-size: 2rem;
-            margin-bottom: 36px;
-            text-align: center;
-        }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
 
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 28px;
-            margin-bottom: 90px;
-        }
+    .hero-sub {
+      max-width: 540px;
+      margin: 0 auto 44px;
+      color: var(--text-muted);
+      font-size: 17px;
+      font-weight: 300;
+      line-height: 1.7;
+    }
 
-        .product-card {
-            background: linear-gradient(180deg, rgba(17,24,39,0.95), rgba(10,15,30,0.98));
-            border: 1px solid #1d2742;
-            border-radius: 24px;
-            overflow: hidden;
-            transition: 0.35s ease;
-        }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
 
-        .product-card:hover {
-            transform: translateY(-6px);
-            border-color: #364b7a;
-            box-shadow: 0 0 24px rgba(34, 211, 238, 0.08);
-        }
+    .btn-main {
+      padding: 12px 28px;
+      background: var(--accent);
+      color: #060a10;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 14px;
+      font-family: var(--sans);
+      transition: opacity 0.2s, transform 0.2s;
+    }
 
-        .product-card img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            background: #0b1020;
-        }
+    .btn-main:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
 
-        .product-content {
-            padding: 26px;
-        }
+    .btn-ghost {
+      padding: 12px 28px;
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: border-color 0.2s, color 0.2s;
+    }
 
-        .product-content h3 {
-            font-size: 1.6rem;
-            margin-bottom: 12px;
-        }
+    .btn-ghost:hover {
+      border-color: var(--accent-glow);
+      color: var(--text);
+    }
 
-        .product-content p {
-            color: #b5bdd0;
-            margin-bottom: 18px;
-        }
+    /* ─── STATS BAR ─── */
 
-        .tag-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 22px;
-        }
+    .stats-bar {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-surface);
+      padding: 20px 0;
+      margin-bottom: 100px;
+    }
 
-        .tag {
-            background: rgba(34, 211, 238, 0.12);
-            color: #7dd3fc;
-            padding: 8px 12px;
-            border-radius: 999px;
-            font-size: 0.85rem;
-        }
+    .stats-inner {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+    }
 
-        /* Product Detail */
+    .stat {
+      text-align: center;
+      padding: 0 48px;
+      border-right: 1px solid var(--border);
+    }
 
-        .product-section {
-            padding: 90px 0;
-            border-top: 1px solid #172036;
-        }
+    .stat:last-child { border-right: none; }
 
-        .product-layout {
-            display: grid;
-            grid-template-columns: 1.1fr 1fr;
-            gap: 50px;
-            align-items: center;
-        }
+    .stat-num {
+      font-family: var(--mono);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
 
-        .product-image img {
-            width: 100%;
-            border-radius: 24px;
-            border: 1px solid #1f2b48;
-        }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 2px;
+    }
 
-        .product-info h2 {
-            font-size: 2.6rem;
-            margin-bottom: 16px;
-        }
+    /* ─── SECTION LABELS ─── */
 
-        .product-info p {
-            color: #bcc5d6;
-            margin-bottom: 20px;
-        }
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .feature-list {
-            list-style: none;
-            margin-bottom: 30px;
-        }
+    .section-label::before, .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
 
-        .feature-list li {
-            margin-bottom: 12px;
-            color: #dce3f3;
-        }
+    .section-label.left::before { display: none; }
+    .section-label.left::after { display: none; }
 
-        .download-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 25px;
-        }
+    /* ─── PRODUCTS ─── */
 
-        .download-buttons a {
-            padding: 14px 18px;
-            border-radius: 12px;
-            font-weight: 600;
-            background: #111827;
-            border: 1px solid #24314f;
-            color: #f4f4f4;
-            transition: 0.3s ease;
-        }
+    #products {
+      margin-bottom: 120px;
+    }
 
-        .download-buttons a:hover {
-            border-color: #7dd3fc;
-            transform: translateY(-2px);
-        }
+    .section-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
 
-        /* Footer */
+    .section-header h2 {
+      font-family: var(--serif);
+      font-size: 2.6rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
 
-        footer {
-            padding: 60px 0 40px;
-            text-align: center;
-            color: #9aa5be;
-            border-top: 1px solid #172036;
-            margin-top: 80px;
-        }
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 16px;
+      font-weight: 300;
+    }
 
-        .heart {
-            color: #ff4d6d;
-            animation: glow 1.5s infinite ease-in-out;
-        }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
 
-        @keyframes glow {
-            0% {
-                text-shadow: 0 0 4px #ff4d6d;
-            }
-            50% {
-                text-shadow: 0 0 16px #ff4d6d;
-            }
-            100% {
-                text-shadow: 0 0 4px #ff4d6d;
-            }
-        }
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
 
-        /* Responsive */
+    .product-card:hover {
+      border-color: var(--accent-glow);
+      transform: translateY(-4px);
+    }
 
-        @media (max-width: 900px) {
-            .hero h2 {
-                font-size: 2.8rem;
-            }
+    .card-image-wrap {
+      background: #080e1a;
+      border-bottom: 1px solid var(--border);
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
 
-            .product-layout {
-                grid-template-columns: 1fr;
-            }
+    .card-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+      transition: opacity 0.3s, transform 0.3s;
+    }
 
-            .nav-links {
-                display: none;
-            }
-        }
-    </style>
+    .product-card:hover .card-image-wrap img {
+      opacity: 1;
+      transform: scale(1.02);
+    }
+
+    .card-no-img {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .card-body {
+      padding: 28px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .card-body h3 {
+      font-family: var(--serif);
+      font-size: 1.55rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .card-body p {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 300;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 24px;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .card-action {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 500;
+      padding: 9px 18px;
+      border: 1px solid var(--accent-glow);
+      border-radius: 8px;
+      width: fit-content;
+      transition: background 0.2s;
+    }
+
+    .card-action:hover { background: var(--accent-dim); }
+
+    .card-action svg { transition: transform 0.2s; }
+    .card-action:hover svg { transform: translateX(3px); }
+
+    /* ─── PRODUCT DETAIL SECTIONS ─── */
+
+    .product-section {
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .product-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: start;
+    }
+
+    .product-layout.reverse { direction: rtl; }
+    .product-layout.reverse > * { direction: ltr; }
+
+    .product-visual {
+      position: relative;
+    }
+
+    .product-visual img {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--border-strong);
+      display: block;
+    }
+
+    .product-visual-fallback {
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .visual-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Corner decorators */
+    .product-visual::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+    .product-info {}
+
+    .product-info .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eyebrow-line {
+      height: 1px;
+      width: 24px;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .product-info h2 {
+      font-family: var(--serif);
+      font-size: 2.5rem;
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 18px;
+      color: var(--text);
+    }
+
+    .product-info .desc {
+      color: var(--text-muted);
+      font-weight: 300;
+      font-size: 15px;
+      margin-bottom: 32px;
+      line-height: 1.75;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-bottom: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .feature-list li::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .dl-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      transition: border-color 0.2s, background 0.2s;
+      text-align: center;
+    }
+
+    .dl-btn:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-card);
+    }
+
+    .dl-os {
+      font-size: 20px;
+    }
+
+    .dl-name {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .dl-type {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    /* Tech stack */
+    .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .tech-pill {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-glow);
+      color: var(--accent);
+    }
+
+    /* ─── COMING SOON ─── */
+
+    .future-section {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .future-inner {
+      text-align: center;
+    }
+
+    .future-inner h2 {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 400;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .future-inner p {
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 300;
+      margin-bottom: 40px;
+    }
+
+    .future-placeholder {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .future-card {
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-strong);
+      border-radius: 14px;
+      padding: 28px 20px;
+      text-align: center;
+    }
+
+    .future-card .fc-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+      opacity: 0.4;
+    }
+
+    .future-card .fc-text {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── FOOTER ─── */
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-brand {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .footer-brand span {
+      color: var(--accent);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: var(--text-dim);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text-muted); }
+
+    /* ─── RESPONSIVE ─── */
+
+    @media (max-width: 840px) {
+      .product-layout { grid-template-columns: 1fr; gap: 40px; }
+      .product-layout.reverse { direction: ltr; }
+      .stats-inner { flex-wrap: wrap; }
+      .stat { border-right: none; padding: 12px 24px; }
+      .future-placeholder { grid-template-columns: 1fr 1fr; }
+      .nav-links a:not(.nav-gh) { display: none; }
+      .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+    }
+
+    @media (max-width: 520px) {
+      .hero h1 { font-size: 2.6rem; }
+      .download-grid { grid-template-columns: repeat(2, 1fr); }
+      .future-placeholder { grid-template-columns: 1fr; }
+    }
+
+    /* ─── SCROLL ANIMATIONS ─── */
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
 
+  <div class="grid-bg" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <nav>
     <div class="container">
-
-        <!-- Navbar -->
-
-        <nav class="navbar">
-            <div class="brand">
-                <img src="assets/icons/DF-icon.png" alt="DevForge Logo">
-                <h1 style="margin-bottom: 0px;">DevForge</h1>
-            </div>
-
-            <div class="nav-links">
-                <a href="#products">Products</a>
-                <a href="#localapiclient">LocalAPIClient</a>
-                <a href="#muledocgenerator">Mule Doc Generator</a>
-            </div>
-        </nav>
-
-        <!-- Hero -->
-
-        <section class="hero">
-            <h2>Privacy-First Developer Tools</h2>
-
-            <p>
-                Modern desktop applications built for developers and enterprises.
-                No cloud sync. No external uploads. Everything runs locally.
-            </p>
-
-            <div class="hero-buttons">
-                <a href="#products" class="btn btn-primary">Explore Products</a>
-                <a href="https://github.com/VermaVikas" class="btn btn-secondary">GitHub</a>
-            </div>
-        </section>
-
-        <!-- Product Cards -->
-
-        <section id="products">
-            <h2 class="section-title">Products</h2>
-
-            <div class="product-grid">
-
-                <!-- LocalAPIClient Card -->
-
-                <div class="product-card">
-                    <img src="assets/localapiclient-image.png" alt="LocalAPIClient">
-
-                    <div class="product-content">
-                        <h3>LocalAPIClient</h3>
-
-                        <p>
-                            A fast, privacy-first desktop API testing tool built for local execution.
-                        </p>
-
-                        <div class="tag-list">
-                            <span class="tag">Offline First</span>
-                            <span class="tag">Collections</span>
-                            <span class="tag">Environment Variables</span>
-                            <span class="tag">Electron</span>
-                        </div>
-
-                        <a href="#localapiclient" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-
-                <!-- Mule Documentation Generator -->
-
-                <div class="product-card">
-                    <img src="assets/MuleDocGenerator.png" alt="Mule Documentation Generator">
-
-                    <div class="product-content">
-                        <h3>Mule Documentation Generator</h3>
-
-                        <p>
-                            Automatically generate structured documentation for MuleSoft projects locally.
-                        </p>
-
-                        <div class="tag-list">
-                            <span class="tag">MuleSoft</span>
-                            <span class="tag">Documentation</span>
-                            <span class="tag">Local Processing</span>
-                            <span class="tag">Enterprise Friendly</span>
-                        </div>
-
-                        <a href="#muledocgenerator" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- LocalAPIClient -->
-
-        <section id="localapiclient" class="product-section">
-            <div class="product-layout">
-
-                <div class="product-image">
-                    <img src="assets/localapiclient-image.png" alt="LocalAPIClient Screenshot">
-                </div>
-
-                <div class="product-info">
-                    <h2>LocalAPIClient</h2>
-
-                    <p>
-                        A lightweight desktop API client focused on speed, privacy, and local-first development workflows.
-                    </p>
-
-                    <ul class="feature-list">
-                        <li>⚡ Fast and distraction-free desktop experience</li>
-                        <li>🔒 No cloud sync or external API storage</li>
-                        <li>📦 Collections and environment variable support</li>
-                        <li>🖥️ Built with Electron, React, Python, and SQLite</li>
-                    </ul>
-
-                    <div class="download-buttons">
-                        <a href="release/localapiclient/LocalAPIClient_1.0.0_x64-setup.exe">
-                            🪟 Windows Setup
-                        </a>
-
-                        <a href="release/localapiclient/LocalAPIClient_main_x64_portable.zip">
-                            📦 Portable ZIP
-                        </a>
-
-                        <a href="release/localapiclient/LocalAPIClient_1.0.0_universal.dmg">
-                            🍎 macOS DMG
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Mule Documentation Generator -->
-
-        <section id="muledocgenerator" class="product-section">
-            <div class="product-layout">
-
-                <div class="product-image">
-                    <img src="assets/MuleDocGenerator.png" alt="Mule Documentation Generator Screenshot">
-                </div>
-
-                <div class="product-info">
-                    <h2>Mule Documentation Generator</h2>
-
-                    <p>
-                        Generate structured and readable MuleSoft documentation automatically while keeping your project completely local.
-                    </p>
-
-                    <ul class="feature-list">
-                        <li>📄 Auto-generate Mule flow documentation</li>
-                        <li>🔒 Enterprise-safe local execution</li>
-                        <li>⚡ Faster onboarding and project understanding</li>
-                        <li>🧠 Built for MuleSoft developers and teams</li>
-                    </ul>
-
-                    <div class="download-buttons">
-                        <a href="release/mule-doc-generator/MuleDocGenerator_1.0.0_x64-setup.exe">
-                            🪟 Windows Setup
-                        </a>
-
-                        <a href="release/mule-doc-generator/MuleDocGenerator_1.0.0_main_x64_portable.zip">
-                            📦 Portable ZIP
-                        </a>
-
-                        <a href="release/mule-doc-generator/MuleDocGenerator_1.0.0_universal.dmg">
-                            🍎 macOS DMG
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-
-        <footer>
-            <p>
-                DevForge | Created with <span class="heart">❤</span> by Vikas Verma
-            </p>
-        </footer>
-
+      <div class="nav-inner">
+        <a href="#" class="brand">
+          <div class="brand-icon">DF</div>
+          <span class="brand-name">DevForge</span>
+        </a>
+        <div class="nav-links">
+          <a href="#products">Products</a>
+          <a href="#localapiclient">LocalAPIClient</a>
+          <a href="#muledocgenerator">Mule Doc Gen</a>
+          <a href="https://github.com/VermaVikas" class="nav-gh" target="_blank" rel="noopener">↗ GitHub</a>
+        </div>
+      </div>
     </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Privacy-First · Local-First · No Cloud Required
+      </div>
+
+      <h1>Developer tools that<br>stay on <em>your machine</em></h1>
+
+      <p class="hero-sub">
+        Desktop applications engineered for developers and enterprises. Your data, your credentials, your control — nothing leaves your device.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#products" class="btn-main">Explore Products</a>
+        <a href="https://github.com/VermaVikas" class="btn-ghost" target="_blank" rel="noopener">GitHub →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="container">
+      <div class="stats-inner">
+        <div class="stat">
+          <span class="stat-num">2</span>
+          <span class="stat-label">Products</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">0</span>
+          <span class="stat-label">Cloud Dependencies</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">&lt;1s</span>
+          <span class="stat-label">Startup Time</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">3</span>
+          <span class="stat-label">Platforms</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS OVERVIEW -->
+  <section id="products">
+    <div class="container">
+      <div class="section-header fade-up">
+        <div class="section-label">— Products</div>
+        <h2>Built for developers,<br>trusted by enterprise</h2>
+        <p>Every tool runs entirely offline, with no accounts, no tracking, and no telemetry.</p>
+      </div>
+
+      <div class="products-grid">
+        <!-- LocalAPIClient Card -->
+        <div class="product-card fade-up">
+          <div class="card-image-wrap">
+            <img src="assets/localapiclient-image.png" alt="LocalAPIClient screenshot" onerror="this.style.display='none';this.parentNode.innerHTML='<div class=\'card-no-img\'>LocalAPIClient Preview</div>'">
+          </div>
+          <div class="card-body">
+            <div class="card-num">Product 01</div>
+            <h3>LocalAPIClient</h3>
+            <p>A fast, privacy-first desktop HTTP API testing tool. The offline alternative to Postman — no account, no cloud sync, no subscription.</p>
+            <div class="tags">
+              <span class="tag">Tauri + Rust</span>
+              <span class="tag">Offline First</span>
+              <span class="tag">Collections</span>
+              <span class="tag">Env Variables</span>
+              <span class="tag">OAuth2</span>
+            </div>
+            <a href="#localapiclient" class="card-action">
+              View Details
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Mule Doc Generator Card -->
+        <div class="product-card fade-up" style="transition-delay: 0.1s">
+          <div class="card-image-wrap">
+            <img src="assets/MuleDocGenerator.png" alt="Mule Documentation Generator screenshot" onerror="this.style.display='none';this.parentNode.innerHTML='<div class=\'card-no-img\'>Mule Doc Generator Preview</div>'">
+          </div>
+          <div class="card-body">
+            <div class="card-num">Product 02</div>
+            <h3>Mule Doc Generator</h3>
+            <p>Automatically generate structured technical documentation from MuleSoft projects. Local processing, enterprise-safe, no upload required.</p>
+            <div class="tags">
+              <span class="tag">MuleSoft</span>
+              <span class="tag">Local Processing</span>
+              <span class="tag">Multi-format</span>
+              <span class="tag">Enterprise</span>
+              <span class="tag">Electron</span>
+            </div>
+            <a href="#muledocgenerator" class="card-action">
+              View Details
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCALAPICLIENT DETAIL -->
+  <section id="localapiclient" class="product-section">
+    <div class="container">
+      <div class="product-layout fade-up">
+
+        <div class="product-visual">
+          <img src="assets/localapiclient-image.png" alt="LocalAPIClient UI screenshot" onerror="this.outerHTML='<div class=\'product-visual-fallback\'><div class=\'visual-label\'>LocalAPIClient</div></div>'">
+        </div>
+
+        <div class="product-info">
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            Product 01
+          </div>
+
+          <h2>LocalAPIClient</h2>
+
+          <p class="desc">
+            A desktop-native HTTP API testing tool built with Tauri and Rust. Designed for developers who value speed, privacy, and a fully offline workflow — without the bloat of cloud-first alternatives.
+          </p>
+
+          <div class="tech-stack">
+            <span class="tech-pill">Tauri v1</span>
+            <span class="tech-pill">Rust</span>
+            <span class="tech-pill">JavaScript</span>
+            <span class="tech-pill">SQLite</span>
+          </div>
+
+          <ul class="feature-list">
+            <li>Zero sign-up — open and start making requests immediately</li>
+            <li>All data in a single portable .json file on your disk, no cloud sync</li>
+            <li>Full OAuth2 Client Credentials flow with body & header delivery</li>
+            <li>Collections, environment variables, and Postman v2/v2.1 import</li>
+            <li>Bearer, Basic, API Key, and Inherited auth per request</li>
+            <li>Structured NDJSON audit logs written locally every day</li>
+            <li>Sub-1-second cold start, binary under 10 MB</li>
+            <li>8 built-in themes: Dracula, Nord, Monokai, Solarized & more</li>
+          </ul>
+
+          <div class="download-grid">
+            <a href="release/localapiclient/LocalAPIClient_1.0.0_x64-setup.exe" class="dl-btn">
+              <span class="dl-os">🪟</span>
+              <span class="dl-name">Windows</span>
+              <span class="dl-type">.exe setup</span>
+            </a>
+            <a href="release/localapiclient/LocalAPIClient_main_x64_portable.zip" class="dl-btn">
+              <span class="dl-os">📦</span>
+              <span class="dl-name">Portable</span>
+              <span class="dl-type">.zip</span>
+            </a>
+            <a href="release/localapiclient/LocalAPIClient_1.0.0_universal.dmg" class="dl-btn">
+              <span class="dl-os">🍎</span>
+              <span class="dl-name">macOS</span>
+              <span class="dl-type">.dmg</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- MULE DOC GENERATOR DETAIL -->
+  <section id="muledocgenerator" class="product-section">
+    <div class="container">
+      <div class="product-layout reverse fade-up">
+
+        <div class="product-visual">
+          <img src="assets/MuleDocGenerator.png" alt="Mule Doc Generator UI screenshot" onerror="this.outerHTML='<div class=\'product-visual-fallback\'><div class=\'visual-label\'>Mule Doc Generator</div></div>'">
+        </div>
+
+        <div class="product-info">
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            Product 02
+          </div>
+
+          <h2>Mule Doc Generator</h2>
+
+          <p class="desc">
+            Automatically scan MuleSoft XML projects and produce structured, readable documentation — locally. Built for enterprise teams where source code never leaves the building.
+          </p>
+
+          <div class="tech-stack">
+            <span class="tech-pill">Electron</span>
+            <span class="tech-pill">MuleSoft XML</span>
+            <span class="tech-pill">Multi-format Export</span>
+          </div>
+
+          <ul class="feature-list">
+            <li>Auto-extract Flows, SubFlows, Batch Jobs, Routers, and Scopes</li>
+            <li>Documents HTTP, Database, Salesforce, and 10+ connectors</li>
+            <li>Generates DataWeave script documentation inline</li>
+            <li>Dependency tracking, global config, and exception handler docs</li>
+            <li>Solves knowledge transfer without relying on individual developers</li>
+            <li>Confluence-ready output — reduce documentation maintenance effort</li>
+            <li>All processing runs locally — zero project file uploads</li>
+            <li>Built for large enterprise integration projects</li>
+          </ul>
+
+          <div class="download-grid">
+            <a href="release/mule-doc-generator/MuleDocGenerator_1.0.0_x64-setup.exe" class="dl-btn">
+              <span class="dl-os">🪟</span>
+              <span class="dl-name">Windows</span>
+              <span class="dl-type">.exe setup</span>
+            </a>
+            <a href="release/mule-doc-generator/MuleDocGenerator_1.0.0_main_x64_portable.zip" class="dl-btn">
+              <span class="dl-os">📦</span>
+              <span class="dl-name">Portable</span>
+              <span class="dl-type">.zip</span>
+            </a>
+            <a href="release/mule-doc-generator/MuleDocGenerator_1.0.0_universal.dmg" class="dl-btn">
+              <span class="dl-os">🍎</span>
+              <span class="dl-name">macOS</span>
+              <span class="dl-type">.dmg</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FUTURE PRODUCTS -->
+  <section class="future-section">
+    <div class="container">
+      <div class="future-inner fade-up">
+        <h2>More tools coming</h2>
+        <p>DevForge is growing. New developer tools in the pipeline.</p>
+
+        <div class="future-placeholder">
+          <div class="future-card">
+            <div class="fc-icon">⚙️</div>
+            <div class="fc-text">Coming Soon</div>
+          </div>
+          <div class="future-card">
+            <div class="fc-icon">🔧</div>
+            <div class="fc-text">In Development</div>
+          </div>
+          <div class="future-card">
+            <div class="fc-icon">💡</div>
+            <div class="fc-text">Planned</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          DevForge · Made with <span>♥</span> by Vikas Verma
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/VermaVikas" target="_blank" rel="noopener">GitHub</a>
+          <a href="#localapiclient">LocalAPIClient</a>
+          <a href="#muledocgenerator">Mule Doc Gen</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
 
 </body>
 </html>
